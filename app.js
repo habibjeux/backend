@@ -5,12 +5,14 @@ const Thing = require('./models/thing');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb+srv://htjeux:JZYO24ZuSdz9OCBs@cluster0.xebjmhn.mongodb.net/?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
+  { 
+    useNewUrlParser: true,
+    useUnifiedTopology: true 
+  })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
-app.use(express.json());
 
+app.use(express.json());
 
 app.use((_, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -29,10 +31,16 @@ app.post('/api/stuff', (req, res, next) => {
       .catch(error => res.status(400).json({ error }));
 });
 
-app.use('/api/stuff', (_, res) => {
-   Thing.find()
+app.get('/api/stuff', (_, res, next) => {
+  Thing.find()
     .then(things => res.status(200).json(things))
-    .catch(errot => res.status(400).json({ error }));
+    .catch(error => res.status(400).json({ error }));
+});
+
+app.get('/api/stuff/:id', (req, res) => {
+  Thing.findOne({ _id: req.params.id })
+   .then(thing => res.status(200).json(thing))
+   .catch(error => res.status(400).json({ error }));
 });
 
 module.exports = app;
